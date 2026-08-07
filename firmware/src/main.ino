@@ -1,20 +1,32 @@
+int thumb, index, middle, ring, pinky;
+
+
 void setup() {
   Serial.begin(9600);
 }
 
 void loop() {
+  readsensors();
+  printvalues();
+  detectletter();
+  delay(300);
+}
+
+void readsensors() {
   int thumbRaw = analogRead(A0);
   int indexRaw = analogRead(A1);
   int middleRaw = analogRead(A2);
   int ringRaw = analogRead(A3);
   int pinkyRaw = analogRead(A4);
 
-  int thumb = constrain(map(thumbRaw, 256, 59, 0, 100), 0, 100);
-  int index = constrain(map(indexRaw, 256, 59, 0, 100), 0, 100);
-  int middle = constrain(map(middleRaw, 256, 59, 0, 100), 0, 100);
-  int ring = constrain(map(ringRaw, 256, 59, 0, 100), 0, 100);
-  int pinky = constrain(map(pinkyRaw, 256, 59, 0, 100), 0, 100);
+  thumb = constrain(map(thumbRaw, 256, 59, 0, 100), 0, 100);
+  index = constrain(map(indexRaw, 256, 59, 0, 100), 0, 100);
+  middle = constrain(map(middleRaw, 256, 59, 0, 100), 0, 100);
+  ring = constrain(map(ringRaw, 256, 59, 0, 100), 0, 100);
+  pinky = constrain(map(pinkyRaw, 256, 59, 0, 100), 0, 100);
+}
 
+void printvalues() {
   Serial.print("T:");
   Serial.print(thumb);
   Serial.print(" I:");
@@ -26,7 +38,10 @@ void loop() {
   Serial.print(" P:");
   Serial.print(pinky);
   Serial.print(" --> ");
+}
 
+
+void detectletter() {
   if (thumb > 60 && index > 60 && middle > 60 && ring > 60 && pinky > 60) {
     Serial.println("Letter: A");
   }
@@ -41,6 +56,4 @@ void loop() {
   else {
     Serial.println("Unknown");
   }
-
-  delay(300);
 }
