@@ -65,21 +65,21 @@ void readSensors() {
 }
 
 void printData() {
-Serial.print(thumb);
-Serial.print(",");
-Serial.print(indexFinger);
-Serial.print(",");
-Serial.print(middle);
-Serial.print(",");
-Serial.print(ring);
-Serial.print(",");
-Serial.print(pinky);
-Serial.print(",");
-Serial.print(accX, 2);
-Serial.print(",");
-Serial.print(accY, 2);
-Serial.print(",");
-Serial.print(accZ, 2);
-Serial.print(",");
-Serial.println("?");
+  Serial.print(thumb);
+  Serial.print(",");
+  Serial.print(indexFinger);
+  Serial.print(",");
+  Serial.print(middle);
+  Serial.print(",");
+  Serial.print(ring);
+  Serial.print(",");
+  Serial.print(pinky);
+  Serial.print(",");
+  Serial.print(accX, 2);
+  Serial.print(",");
+  Serial.print(accY, 2);
+  Serial.print(",");
+  Serial.print(accZ, 2);
+  Serial.print(",");
+  Serial.println("?");
 }
