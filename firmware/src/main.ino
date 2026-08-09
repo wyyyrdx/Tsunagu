@@ -1,68 +1,85 @@
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
+
+// ================== Settings ==================
+enum LanguageMode { ASL, ARSL };
+LanguageMode currentLanguage = ARSL;
+
+// ================== Pins ==================
 #define THUMB_PIN 1
 #define INDEX_PIN 2
 #define MIDDLE_PIN 3
 #define RING_PIN 4
 #define PINKY_PIN 5
 
+// ================== Global ==================
+Adafruit_MPU6050 mpu;
+bool mpuConnected = false;
 
-
-int thumb, indexfinger, middle, ring, pinky;
+int thumb, indexFinger, middle, ring, pinky;
+float accX = 0, accY = 0, accZ = 0;
 
 void setup() {
   Serial.begin(115200);
-  delay(1000);
+  delay(1500);
+
+  Serial.println("Tsungu - Data Collection Mode");
+  Serial.println(currentLanguage == ASL ? "Language: ASL" : "Language: ARSL");
+  Serial.println("Format: thumb,index,middle,ring,pinky,accX,accY,accZ,label");
+  Serial.println("================================================");
+
+    if (mpu.begin()) {
+      mpuConnected = true;
+      mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+      mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+      mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+      Serial.println("MPU6050: Connected");
+  } else {
+    Serial.println("MPU6050: Not connected");
+}
+
+   Serial.println("Ready. Make a gesture and watch the values.");
 }
 
 void loop() {
-  readsensors();
-  printvalues();
-  detectletter();
-  delay(300);
+  readSensors();
+  printData();
+  delay(200);
 }
 
-void readsensors() {
-  int thumbRaw = analogRead(THUMB_PIN);
-  int indexRaw = analogRead(INDEX_PIN);
-  int middleRaw = analogRead(MIDDLE_PIN);
-  int ringRaw = analogRead(RING_PIN);
-  int pinkyRaw = analogRead(PINKY_PIN);
+void readSensors() {
+  thumb = constrain(map(analogRead(THUMB_PIN), 256, 59, 0, 100), 0, 100);
+  indexFinger = constrain(map(analogRead(INDEX_PIN), 256, 59, 0, 100), 0, 100);
+  middle = constrain(map(analogRead(MIDDLE_PIN), 256, 59, 0, 100), 0, 100);
+  ring = constrain(map(analogRead(RING_PIN), 256, 59, 0, 100), 0, 100);
+  pinky = constrain(map(analogRead(PINKY_PIN), 256, 59, 0, 100), 0, 100);
 
-  thumb = constrain(map(thumbRaw, 256, 59, 0, 100), 0, 100);
-  indexfinger = constrain(map(indexRaw, 256, 59, 0, 100), 0, 100);
-  middle = constrain(map(middleRaw, 256, 59, 0, 100), 0, 100);
-  ring = constrain(map(ringRaw, 256, 59, 0, 100), 0, 100);
-  pinky = constrain(map(pinkyRaw, 256, 59, 0, 100), 0, 100);
+  if (mpuConnected) {
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
+    accX = a.acceleration.x;
+    accY = a.acceleration.y;
+    accZ = a.acceleration.z;
+    }
 }
 
-
-void printvalues() {
-  Serial.print("T:");
-  Serial.print(thumb);
-  Serial.print(" I:");
-  Serial.print(indexfinger);
-  Serial.print(" M:");
-  Serial.print(middle);
-  Serial.print(" R:");
-  Serial.print(ring);
-  Serial.print(" P:");
-  Serial.print(pinky);
-  Serial.print(" --> ");
-}
-
-
-void detectletter() {
-  if (thumb > 60 && indexfinger > 60 && middle > 60 && ring > 60 && pinky > 60) {
-    Serial.println("Letter: A");
-  }
-  else if (thumb > 60 && indexfinger < 40 && middle < 40 && ring < 40 && pinky < 40) {
-    Serial.println("Letter: B");
-  }
-  else if (thumb > 40 && thumb < 80 && indexfinger > 40 && indexfinger < 80 &&
-           middle > 40 && middle < 80 && ring > 40 && ring < 80 &&
-           pinky > 40 && pinky < 80) {
-    Serial.println("Letter: C");
-  }
-  else {
-    Serial.println("Unknown");
-  }
+void printData() {
+Serial.print(thumb);
+Serial.print(",");
+Serial.print(indexFinger);
+Serial.print(",");
+Serial.print(middle);
+Serial.print(",");
+Serial.print(ring);
+Serial.print(",");
+Serial.print(pinky);
+Serial.print(",");
+Serial.print(accX, 2);
+Serial.print(",");
+Serial.print(accY, 2);
+Serial.print(",");
+Serial.print(accZ, 2);
+Serial.print(",");
+Serial.println("?");
 }
